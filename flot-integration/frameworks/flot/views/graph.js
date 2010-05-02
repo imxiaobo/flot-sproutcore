@@ -76,10 +76,10 @@ Flot.GraphView = SC.View.extend(
 	} ,
 	
 	setLayerNeedsUpdate: function() {
-	//	this.invokeOnce(function() {
+		this.invokeOnce(function() {
 			this.set('layerNeedsUpdate', YES);
 			console.log('need update') ;
-	//	}) ;
+		}) ;
 		
 	}
 	
