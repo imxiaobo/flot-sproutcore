@@ -53,6 +53,8 @@
                 xaxis: {
                     position: "bottom", // or "top"
                     mode: null, // null or "time"
+                    color: null, // base color, labels, ticks
+                    tickColor: null, // possibly different color of ticks, e.g. "rgba(0,0,0,0.15)"
                     transform: null, // null or f: number -> number to transform axis
                     inverseTransform: null, // if transform is set, this should be the inverse function
                     min: null, // min. value to show, null means set automatically
@@ -60,9 +62,10 @@
                     autoscaleMargin: null, // margin in % to add if auto-setting min/max
                     ticks: null, // either [1, 3] or [[1, "a"], 3] or (fn: axis info -> ticks) or app. number of ticks for auto-ticks
                     tickFormatter: null, // fn: number -> string
-                    tickLength: null, // size in pixels of ticks, or "full" for whole line
                     labelWidth: null, // size of tick labels in pixels
                     labelHeight: null,
+                    tickLength: null, // size in pixels of ticks, or "full" for whole line
+                    alignTicksWithAxis: null, // axis number or null for no sync
                     
                     // mode specific options
                     tickDecimals: null, // no. of decimals, null means auto
@@ -110,11 +113,11 @@
                     aboveData: false,
                     color: "#545454", // primary color used for outline and labels
                     backgroundColor: null, // null for transparent, else color
-                    tickColor: "rgba(0,0,0,0.15)", // color used for the ticks
+                    borderColor: null, // set if different from the grid color
+                    tickColor: null, // color for the ticks, e.g. "rgba(0,0,0,0.15)"
                     labelMargin: 5, // in pixels
                     axisMargin: 8, // in pixels
                     borderWidth: 2, // in pixels
-                    borderColor: null, // set if different from the grid color
                     markings: null, // array of ranges or fn: axes -> array of ranges
                     markingsColor: "#f4f4f4",
                     markingsLineWidth: 2,
@@ -130,8 +133,6 @@
         overlay = null,     // canvas for interactive stuff on top of plot
         eventHolder = null, // jQuery object that events should be bound to
         ctx = null, octx = null,
-        /*axes = { xaxis: { n: 1 }, yaxis: { n: 1 },
-                 x2axis: { n: 2 }, y2axis: { n: 2 } },*/
         xaxes = [], yaxes = [],
         plotOffset = { left: 0, right: 0, top: 0, bottom: 0},
         canvasWidth = 0, canvasHeight = 0,
@@ -232,9 +233,22 @@
             var i;
             
             $.extend(true, options, opts);
+            
+            if (options.xaxis.color == null)
+                options.xaxis.color = options.grid.color;
+            if (options.yaxis.color == null)
+                options.yaxis.color = options.grid.color;
+            
+            if (options.xaxis.tickColor == null) // backwards-compatibility
+                options.xaxis.tickColor = options.grid.tickColor;
+            if (options.yaxis.tickColor == null) // backwards-compatibility
+                options.yaxis.tickColor = options.grid.tickColor;
+
             if (options.grid.borderColor == null)
                 options.grid.borderColor = options.grid.color;
-
+            if (options.grid.tickColor == null)
+                options.grid.tickColor = $.color.parse(options.grid.color).scale('a', 0.22).toString();
+            
             // fill in defaults in axes, copy at least always the
             // first as the rest of the code assumes it'll be there
             for (i = 0; i < Math.max(1, options.xaxes.length); ++i)
@@ -868,8 +882,9 @@
             var sameDirection = $.grep(all, function (a) {
                 return a && (a.labelHeight || a.labelWidth);
             });
-            
-            if ($.inArray(axis, sameDirection) != 0 && tickLength == "full")
+
+            var innermost = $.inArray(axis, sameDirection) == 0;
+            if (!innermost && tickLength == "full")
                 tickLength = 5;
                 
             if (!isNaN(+tickLength))
@@ -905,7 +920,7 @@
             axis.position = pos;
             axis.tickLength = tickLength;
             axis.box.padding = padding;
-            axis.innermost = $.inArray(axis, samePosition) == 0;
+            axis.innermost = innermost;
         }
 
         function fixupAxisBox(axis) {
@@ -934,11 +949,12 @@
                 for (k = 0; k < axes.length; ++k) {
                     setupTickGeneration(axes[k]);
                     setTicks(axes[k]);
+                    snapRangeToTicks(axes[k], axes[k].ticks);
                 }
 
                 // find labelWidth/Height, do this on all, not just
                 // used as we might need to reserve space for unused
-                // to if their labelWidth/Height is set
+                // too if their labelWidth/Height is set
                 for (j = 0; j < xaxes.length; ++j)
                     measureTickLabels(xaxes[j]);
                 for (j = 0; j < yaxes.length; ++j)
@@ -1029,7 +1045,7 @@
                 noTicks = 0.3 * Math.sqrt(canvasWidth);
             else
                 noTicks = 0.3 * Math.sqrt(canvasHeight);
-            
+
             var delta = (axis.max - axis.min) / noTicks,
                 size, generator, unit, formatter, i, magn, norm;
 
@@ -1094,10 +1110,7 @@
                     size *= magn;
                 }
 
-                if (opts.tickSize) {
-                    size = opts.tickSize[0];
-                    unit = opts.tickSize[1];
-                }
+                axis.tickSize = opts.tickSize || [size, unit];
                 
                 generator = function(axis) {
                     var ticks = [],
@@ -1135,7 +1148,7 @@
                     do {
                         prev = v;
                         v = d.getTime();
-                        ticks.push({ v: v, label: axis.tickFormatter(v, axis) });
+                        ticks.push(v);
                         if (unit == "month") {
                             if (tickSize < 1) {
                                 // a bit complicated - we'll divide the month
@@ -1225,10 +1238,8 @@
                 if (opts.minTickSize != null && size < opts.minTickSize)
                     size = opts.minTickSize;
 
-                if (opts.tickSize != null)
-                    size = opts.tickSize;
-
-                axis.tickDecimals = Math.max(0, (maxDec != null) ? maxDec : dec);
+                axis.tickDecimals = Math.max(0, maxDec != null ? maxDec : dec);
+                axis.tickSize = opts.tickSize || size;
 
                 generator = function (axis) {
                     var ticks = [];
@@ -1239,7 +1250,7 @@
                     do {
                         prev = v;
                         v = start + i * axis.tickSize;
-                        ticks.push({ v: v, label: axis.tickFormatter(v, axis) });
+                        ticks.push(v);
                         ++i;
                     } while (v < axis.max && v != prev);
                     return ticks;
@@ -1250,7 +1261,44 @@
                 };
             }
 
-            axis.tickSize = unit ? [size, unit] : size;
+            if (opts.alignTicksWithAxis != null) {
+                var otherAxis = (axis.direction == "x" ? xaxes : yaxes)[opts.alignTicksWithAxis - 1];
+                if (otherAxis && otherAxis.used && otherAxis != axis) {
+                    // consider snapping min/max to outermost nice ticks
+                    var niceTicks = generator(axis);
+                    if (niceTicks.length > 0) {
+                        if (opts.min == null)
+                            axis.min = Math.min(axis.min, niceTicks[0]);
+                        if (opts.max == null && niceTicks.length > 1)
+                            axis.max = Math.max(axis.max, niceTicks[niceTicks.length - 1]);
+                    }
+                    
+                    generator = function (axis) {
+                        // copy ticks, scaled to this axis
+                        var ticks = [], v, i;
+                        for (i = 0; i < otherAxis.ticks.length; ++i) {
+                            v = (otherAxis.ticks[i].v - otherAxis.min) / (otherAxis.max - otherAxis.min);
+                            v = axis.min + v * (axis.max - axis.min);
+                            ticks.push(v);
+                        }
+                        return ticks;
+                    };
+                    
+                    // we might need an extra decimal since forced
+                    // ticks don't necessarily fit naturally
+                    if (axis.mode != "time" && opts.tickDecimals == null) {
+                        var extraDec = Math.max(0, -Math.floor(Math.log(delta) / Math.LN10) + 1),
+                            ts = generator(axis);
+
+                        // only proceed if the tick interval rounded
+                        // with an extra decimal doesn't give us a
+                        // zero at end
+                        if (!(ts.length > 1 && /\..*0$/.test((ts[1] - ts[0]).toFixed(extraDec))))
+                            axis.tickDecimals = extraDec;
+                    }
+                }
+            }
+
             axis.tickGenerator = generator;
             if ($.isFunction(opts.tickFormatter))
                 axis.tickFormatter = function (v, axis) { return "" + opts.tickFormatter(v, axis); };
@@ -1259,47 +1307,44 @@
         }
         
         function setTicks(axis) {
-            var opts = axis.options;
-            
             axis.ticks = [];
 
-            if (opts.ticks == null)
-                axis.ticks = axis.tickGenerator(axis);
-            else if (typeof opts.ticks == "number") {
-                if (opts.ticks > 0)
-                    axis.ticks = axis.tickGenerator(axis);
-            }
-            else if (opts.ticks) {
-                var ticks = opts.ticks;
-
-                if ($.isFunction(ticks))
+            var oticks = axis.options.ticks, ticks = null;
+            if (oticks == null || (typeof oticks == "number" && oticks > 0))
+                ticks = axis.tickGenerator(axis);
+            else if (oticks) {
+                if ($.isFunction(oticks))
                     // generate the ticks
-                    ticks = ticks({ min: axis.min, max: axis.max });
-                
-                // clean up the user-supplied ticks, copy them over
-                var i, v;
-                for (i = 0; i < ticks.length; ++i) {
-                    var label = null;
-                    var t = ticks[i];
-                    if (typeof t == "object") {
-                        v = t[0];
-                        if (t.length > 1)
-                            label = t[1];
-                    }
-                    else
-                        v = t;
-                    if (label == null)
-                        label = axis.tickFormatter(v, axis);
-                    axis.ticks[i] = { v: v, label: label };
-                }
+                    ticks = oticks({ min: axis.min, max: axis.max });
+                else
+                    ticks = oticks;
             }
 
-            if (opts.autoscaleMargin != null && axis.ticks.length > 0) {
+            // clean up/labelify the supplied ticks, copy them over
+            var i, v;
+            for (i = 0; i < ticks.length; ++i) {
+                var label = null;
+                var t = ticks[i];
+                if (typeof t == "object") {
+                    v = t[0];
+                    if (t.length > 1)
+                        label = t[1];
+                }
+                else
+                    v = t;
+                if (label == null)
+                    label = axis.tickFormatter(v, axis);
+                axis.ticks[i] = { v: v, label: label };
+            }
+        }
+
+        function snapRangeToTicks(axis, ticks) {
+            if (axis.options.autoscaleMargin != null && ticks.length > 0) {
                 // snap to ticks
-                if (opts.min == null)
-                    axis.min = Math.min(axis.min, axis.ticks[0].v);
-                if (opts.max == null && axis.ticks.length > 1)
-                    axis.max = Math.max(axis.max, axis.ticks[axis.ticks.length - 1].v);
+                if (axis.options.min == null)
+                    axis.min = Math.min(axis.min, ticks[0].v);
+                if (axis.options.max == null && ticks.length > 1)
+                    axis.max = Math.max(axis.max, ticks[ticks.length - 1].v);
             }
         }
       
@@ -1438,13 +1483,15 @@
             }
             
             // draw the ticks
-            ctx.strokeStyle = options.grid.tickColor;
             var axes = getUsedAxes(), bw = options.grid.borderWidth;
 
             for (var j = 0; j < axes.length; ++j) {
                 var axis = axes[j], box = axis.box,
                     t = axis.tickLength, x, y, xoff, yoff;
 
+                ctx.strokeStyle = axis.options.tickColor || $.color.parse(axis.options.color).scale('a', 0.22).toString();
+                ctx.lineWidth = 1;
+                
                 // find the edges
                 if (axis.direction == "x") {
                     x = 0;
@@ -1460,8 +1507,6 @@
                     else
                         x = box.left - plotOffset.left;
                 }
-
-                ctx.lineWidth = 1;
                 
                 // draw tick bar
                 if (!axis.innermost) {
@@ -1536,13 +1581,13 @@
         function insertAxisLabels() {
             placeholder.find(".tickLabels").remove();
             
-            var html = ['<div class="tickLabels" style="font-size:smaller;color:' + options.grid.color + '">'];
+            var html = ['<div class="tickLabels" style="font-size:smaller">'];
 
             var axes = getUsedAxes();
             for (var j = 0; j < axes.length; ++j) {
                 var axis = axes[j], box = axis.box;
                 //debug: html.push('<div style="position:absolute;opacity:0.10;background-color:red;left:' + box.left + 'px;top:' + box.top + 'px;width:' + box.width +  'px;height:' + box.height + 'px"></div>')
-                html.push('<div class="' + axis.direction + 'Axis ' + axis.direction + axis.n + 'Axis">');
+                html.push('<div class="' + axis.direction + 'Axis ' + axis.direction + axis.n + 'Axis" style="color:' + axis.options.color + '">');
                 for (var i = 0; i < axis.ticks.length; ++i) {
                     var tick = axis.ticks[i];
                     if (!tick.label || tick.v < axis.min || tick.v > axis.max)

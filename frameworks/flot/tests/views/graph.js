@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   Flot.GraphView Unit Test
-// Copyright: ©2010 My Company, Inc.
+// Copyright: ©2010 Bo Xiao <mail.xiaobo@gmail.com>, Inc.
 // ==========================================================================
 /*globals Flot module test ok equals same stop start */
 
