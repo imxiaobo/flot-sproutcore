@@ -10,7 +10,7 @@
   
   @extends SC.Object
 */
-
+sc_require('excanvas.js');
 sc_require('jquery.js');
 sc_require('jquery.flot.js');
 sc_require('jquery.flot.crosshair.js');
