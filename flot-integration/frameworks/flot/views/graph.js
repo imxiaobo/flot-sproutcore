@@ -30,7 +30,7 @@ Flot.GraphView = SC.View.extend(
 					Flot.plot(this.get('layer'),
 			    	  	  	  this.get('data').toArray(),
 				  	  	  	  this.get('options')) ;
-					console.log('render');
+				//	console.log('render');
 				}
 			}
 		}				
@@ -43,12 +43,12 @@ Flot.GraphView = SC.View.extend(
 	
 	plotDataDidChange: function() {
 		this.setLayerNeedsUpdate() ;
-		console.log('data changed');
+		//console.log('data changed');
 	}.observes('.data','.data.[]'),
 	
 	plotOptionsDidChange: function() {
 		this.setLayerNeedsUpdate() ;
-		console.log('options changed');	
+		//console.log('options changed');	
 	}.observes('.options'),
 	
 	visibilityDidChange: function() {
@@ -59,26 +59,26 @@ Flot.GraphView = SC.View.extend(
 	}.observes('isVisibleInWindow','isVisible'),
 	
 	layerDidChange: function() {
-		console.log('layerchanged');
+		//console.log('layerchanged');
 		this.setLayerNeedsUpdate() ;	
 	}.observes('layer'),
 
 	layoutDidChange: function() {
 		sc_super() ;
-		console.log('layout changed');
+		//console.log('layout changed');
 		this.setLayerNeedsUpdate() ;
 	} ,
 	
 	updateLayerLocationIfNeeded: function() {
 		sc_super() ;
-		console.log('layer location update');
+		//console.log('layer location update');
 		this.setLayerNeedsUpdate() ;
 	} ,
 	
 	setLayerNeedsUpdate: function() {
 		this.invokeOnce(function() {
 			this.set('layerNeedsUpdate', YES);
-			console.log('need update') ;
+		//	console.log('need update') ;
 		}) ;
 		
 	}
