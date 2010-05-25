@@ -70,14 +70,12 @@ Flot.GraphView = SC.View.extend(
 	viewDidResize: function() {
 		sc_super();
 		this.setLayerNeedsUpdate() ;
-		//if (this.debugInConsole) 
-		console.log('view did resize');
+		if (this.debugInConsole) console.log('view did resize');
 	}.observes('layout'),
 	parentViewDidResize : function() {
 		sc_super();
 		this.setLayerNeedsUpdate();
-		//if (this.debugInConsole) 
-		console.log('parent did resize');
+		if (this.debugInConsole) console.log('parent did resize');
 	}
 
 });
