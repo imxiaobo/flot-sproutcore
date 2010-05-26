@@ -1,0 +1,25 @@
+body {
+	overflow: hidden;
+}
+
+.sc-view.backdrop {
+	-webkit-box-shadow: #000 1px 3px 40px ;
+	-moz-box-shadow: #000 1px 3px 40px ;
+	color: black;
+}
+
+.rounded {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	color: black;
+}
+
+.sc-toolbar-view > .telsa-logo {
+	font-weight: bold;
+	font-size: 26px;
+	color: rgb(220,220,220);
+}
+
+.sc-toolbar-view > .app-logo {
+	font-size: 20px;
+}
