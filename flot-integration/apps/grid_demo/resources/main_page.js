@@ -18,7 +18,6 @@ GridDemo.mainPage = SC.Page.design({
 			action: 'addRandomData',
 			target: 'GridDemo.graphController'
 		}),
-		
 		backDrop: SC.View.design({
 			classNames: 'backdrop rounded'.w(),
 			backgroundColor: "#dedede",
@@ -41,18 +40,5 @@ GridDemo.mainPage = SC.Page.design({
 				})
 			})
 		})
-		
-		
-		/*
-		graphGrid: SC.ScrollView.design({
-			layout: { top: 100, right: 40, bottom: 100, left: 40, minWidth: 800 },
-			contentView: SC.GridView.design({
-				rowHeight: 200,
-				columnWidth: 300,
-				contentBinding: 'GridDemo.graphController',
-				exampleView: GridDemo.GridFlot
-			})
-		})
-		*/
 	})
 });
