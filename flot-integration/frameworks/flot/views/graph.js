@@ -53,7 +53,7 @@ Flot.GraphView = SC.View.extend(
 	
 	visibilityDidChange: function() {
 		if(this.get('isVisibleInWindow') && this.get('isVisible')) {
-			console.log('visibility changed');
+			//console.log('visibility changed');
 			this.setLayerNeedsUpdate() ;
 		}		
 	}.observes('isVisibleInWindow','isVisible'),
