@@ -49,7 +49,7 @@ Flot.GraphView = SC.View.extend(
 	plotOptionsDidChange: function() {
 		this.setLayerNeedsUpdate() ;
 		//console.log('options changed');	
-	}.observes('.options'),
+	}.observes('.options', '.options.[]'),
 	
 	visibilityDidChange: function() {
 		if(this.get('isVisibleInWindow') && this.get('isVisible')) {

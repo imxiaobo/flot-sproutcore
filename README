@@ -1,11 +1,11 @@
-Flot integraton provides framwork for integrating Flot into Sproutcore framework
+Flot integration provides framework for integrating Flot into SproutCore framework.
 
-The flot-integration directory is an example sproutcore application. If you have sproutcore installed and want to see the example, type
+The flot-integration directory is an example SproutCore application. If you have SproutCore installed and want to see the example, type:
 
   cd flot-integration
   sc-server
   
-and go to http://localhost:4020/demo in your browser
+and go to http://localhost:4020/demo in your browser.
 
 If you would like to add flot integration support to your existing app
 
@@ -13,7 +13,7 @@ If you would like to add flot integration support to your existing app
   cd flot-integration/frameworks
   cp -r flot myapp_dir/frameworks
   
-and add this line to your Buildfile
+and add this line to your Buildfile:
 
   config :all, :required => [:sproutcore, :flot]
 
@@ -22,10 +22,10 @@ restart server if necessary.
 Now, you can create Flot views like this
 
   Flot.GraphView.design({
-    layout: { left: 0, top: 0, height: 200, right: 0 },
+    layout: { left: 0, top: 0, height: 200, right: 0 } ,
     data: [
-      SC.Object.create({label: 'set1', data:[[0,0], [1, 3], [2, 4]]}),
-    ],
+      SC.Object.create({label: 'set1', data:[[0,0], [1, 3], [2, 4]]}) ,
+    ] ,
     options: SC.Object.create({
       // your options here
     })
