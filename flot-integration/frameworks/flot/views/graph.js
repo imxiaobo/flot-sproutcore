@@ -18,7 +18,6 @@ Flot.GraphView = SC.View.extend(
 	data: null ,
 	options: null ,
 	debugInConsole: true ,
-	concatenatedProperties: ['options'] ,
 	render: function(context, firstTime) {
 		sc_super();
 		
