@@ -6,3 +6,4 @@
 # Add initial buildfile information here
 config :flot, :required => [:sproutcore]
 config :demo, :required => [:sproutcore, 'flot']
+config :grid_demo, :required => [:sproutcore, 'flot']
