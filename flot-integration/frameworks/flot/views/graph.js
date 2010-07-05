@@ -24,14 +24,14 @@ Flot.GraphView = SC.View.extend(
 			if((this.get('frame').width > 0) && (this.get('frame').height > 0)) {
 				var data = this.get('data'),
 				series = this.get('series');
-
 				if (!SC.empty(data)) {
-					Flot.plot(this.get('layer'), data.toArray(),
-						this.get('options'));
+				console.log(this.get('layer'));
+                    Flot.plot(this.get('layer'), data.toArray(),
+                        this.get('options'));
 					if (this.debugInConsole) console.log('render data');
 				} else if (!SC.empty(series)) {
-					Flot.plot(this.get('layer'), series.toArray(),
-						this.get('options'));
+                    Flot.plot(this.get('layer'), series.toArray(),
+                        this.get('options'));
 					if (this.debugInConsole) console.log('render series');
 				} else {
 					if (this.debugInConsole) console.warn('data was empty');

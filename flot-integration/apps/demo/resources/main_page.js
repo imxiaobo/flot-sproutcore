@@ -44,7 +44,8 @@ Demo.mainPage = SC.Page.design({
         graph: Flot.GraphView.design({
             layout: { top: 100, right: 40, bottom: 100, left: 40 } ,
             dataBinding: 'Demo.graphController.arrangedObjects',
-            optionsBinding: 'Demo.graphController.options'
+            optionsBinding: 'Demo.graphController.options',
+            debugInConsole: NO
         })
     })
 
