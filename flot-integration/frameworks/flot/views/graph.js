@@ -20,23 +20,29 @@ Flot.GraphView = SC.View.extend(
 	debugInConsole: true ,
 	render: function(context, firstTime) {
 		sc_super();
-		if(this.get('layer') && this.get('isVisibleInWindow')) {
-			if((this.get('frame').width > 0) && (this.get('frame').height > 0)) {
-				var data = this.get('data'),
-				series = this.get('series');
-				if (!SC.empty(data)) {
-				console.log(this.get('layer'));
-                    Flot.plot(this.get('layer'), data.toArray(),
-                        this.get('options'));
-					if (this.debugInConsole) console.log('render data');
-				} else if (!SC.empty(series)) {
-                    Flot.plot(this.get('layer'), series.toArray(),
-                        this.get('options'));
-					if (this.debugInConsole) console.log('render series');
-				} else {
-					if (this.debugInConsole) console.warn('data was empty');
-				}
-			}
+		if( !this.get('layer') || ! this.get('isVisibleInWindow'))
+			return;
+
+		if((this.get('frame').width <= 0) || (this.get('frame').height <= 0))
+			return;
+
+		if( ($(this.get('layer')).width() <= 0)
+				|| ($(this.get('layer')).height() <= 0))
+			return;
+
+		var data = this.get('data'),
+		series = this.get('series');
+		if (!SC.empty(data)) {
+		console.log(this.get('layer'));
+			Flot.plot(this.get('layer'), data.toArray(),
+				this.get('options'));
+			if (this.debugInConsole) console.log('render data');
+		} else if (!SC.empty(series)) {
+			Flot.plot(this.get('layer'), series.toArray(),
+				this.get('options'));
+			if (this.debugInConsole) console.log('render series');
+		} else {
+			if (this.debugInConsole) console.warn('data was empty');
 		}
 	},
 	
