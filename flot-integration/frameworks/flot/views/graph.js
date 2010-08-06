@@ -20,15 +20,12 @@ Flot.GraphView = SC.View.extend(
 	debugInConsole: true ,
 	render: function(context, firstTime) {
 		sc_super();
-		if( !this.get('layer') || ! this.get('isVisibleInWindow'))
-			return;
+		if( !this.get('layer') || ! this.get('isVisibleInWindow')) return;
 
-		if((this.get('frame').width <= 0) || (this.get('frame').height <= 0))
-			return;
+		if((this.get('frame').width <= 0) || (this.get('frame').height <= 0)) return;
 
 		if( ($(this.get('layer')).width() <= 0)
-				|| ($(this.get('layer')).height() <= 0))
-			return;
+				|| ($(this.get('layer')).height() <= 0)) return;
 
 		var data = this.get('data'),
 		series = this.get('series');
