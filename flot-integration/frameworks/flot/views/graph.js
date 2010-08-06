@@ -12,12 +12,13 @@
 */
 
 sc_require('core.js');
+
 Flot.GraphView = SC.View.extend(
 /** @scope Flot.GraphView.prototype */ {
 	series: null,
 	data: null ,
 	options: null ,
-	debugInConsole: true ,
+	debugInConsole: false ,
 	render: function(context, firstTime) {
 		sc_super();
 		if( !this.get('layer') || ! this.get('isVisibleInWindow')) return;
@@ -30,7 +31,7 @@ Flot.GraphView = SC.View.extend(
 		var data = this.get('data'),
 		series = this.get('series');
 		if (!SC.empty(data)) {
-		console.log(this.get('layer'));
+		if (this.debugInConsole) console.log(this.get('layer'));
 			Flot.plot(this.get('layer'), data.toArray(),
 				this.get('options'));
 			if (this.debugInConsole) console.log('render data');
@@ -77,9 +78,10 @@ Flot.GraphView = SC.View.extend(
 	},
 	
     updateLayerLocationIfNeeded: function() {
-		sc_super() ;
+		var ret = sc_super() ;
 		if (this.debugInConsole) console.log('layer location update');
 		this.setLayerNeedsUpdate() ;
+		return ret;
 	},
 	
     setLayerNeedsUpdate: function() {
@@ -94,6 +96,7 @@ Flot.GraphView = SC.View.extend(
 		this.setLayerNeedsUpdate() ;
 		if (this.debugInConsole) console.log('view did resize');
 	}.observes('layout'),
+	
 	
     parentViewDidResize : function() {
 		sc_super();

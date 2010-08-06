@@ -27,8 +27,8 @@ Demo.mainPage = SC.Page.design({
 
     welcomeView: SC.LabelView.design({
         escapeHTML:NO,
-		layout: { centerX:0, centerY:0, width: 500, height:400 } ,
-		value: "<p>Flot integration provides framework for integrating Flot into Sproutcore framework.</p>"
+		layout: { centerX:0, centerY:0, width: 550, height:400 } ,
+		value: "<p>Flot-SproutCore provides framework for integrating flot into SproutCore applications.</p>"
     }),
 
     graphView: SC.View.design({
