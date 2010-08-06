@@ -1,6 +1,6 @@
-Flot integration provides framework for integrating Flot into SproutCore framework.
+Flot-SproutCore provides framework for integrating flot into SproutCore applications.
 
-The flot-integration directory is an example SproutCore application. If you have SproutCore installed and want to see the example, type:
+The Flot-SproutCore directory is an example SproutCore application. If you have SproutCore installed and want to see the example, type:
 
   cd flot-integration
   sc-server
