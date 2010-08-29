@@ -1,3 +1,3 @@
 [submodule "dependencies/flot-svn"]
 	path = dependencies/flot-svn
-	url = git@github.com:elventear/flot-svn.git
+	url = git://github.com/elventear/flot-svn.git
