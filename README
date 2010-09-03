@@ -30,3 +30,9 @@ Now, you can create Flot views like this
       // your options here
     })
   })
+
+
+Notes:
+since the flot-svn is a submodule, after cloning the repo it is important to do:
+git submodule init and then
+git submodule update otherwise the demo won't run because it can't find the flot sources.
